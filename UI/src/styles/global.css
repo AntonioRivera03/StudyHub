@@ -1,0 +1,142 @@
+:root {
+  color-scheme: dark;
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --bg: #101315;
+  --surface-deep: #0c0e10;
+  --surface: #15191c;
+  --surface-raised: #191d20;
+  --text: #cacccc;
+  --text-strong: #e4e1d8;
+  --accent: #798186;
+  --accent-strong: #a8afb2;
+  --muted: #878b8e;
+  --border: #4b4e55;
+  --border-soft: #2c3034;
+  --danger: #c66b67;
+  --danger-muted: #7f4947;
+  --warm: #d4cec1;
+  --radius: 6px;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  min-height: 100%;
+  background: var(--bg);
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+input,
+select,
+textarea,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: 3px;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--text-strong);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  background: var(--surface-deep);
+  color: var(--text-strong);
+}
+
+input,
+select {
+  min-height: 40px;
+  padding: 0 10px;
+}
+
+textarea {
+  min-height: 84px;
+  padding: 9px 10px;
+  resize: vertical;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #676d71;
+}
+
+label {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+::selection {
+  background: #465158;
+  color: var(--text-strong);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

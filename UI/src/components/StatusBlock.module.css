@@ -1,0 +1,28 @@
+.block {
+  padding: 28px;
+  border: 1px dashed var(--border-soft);
+  border-radius: var(--radius);
+  color: var(--muted);
+  text-align: center;
+}
+
+.title {
+  margin-bottom: 6px;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.detail {
+  max-width: 440px;
+  margin: 0 auto 16px;
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.error {
+  border-color: var(--danger-muted);
+}
+
+.error .title {
+  color: #d58a86;
+}

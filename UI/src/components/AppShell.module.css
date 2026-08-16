@@ -1,0 +1,126 @@
+.shell {
+  min-height: 100vh;
+}
+
+.rail {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 10;
+  display: flex;
+  width: 176px;
+  flex-direction: column;
+  border-right: 1px solid var(--border-soft);
+  background: var(--surface-deep);
+}
+
+.mark {
+  display: grid;
+  width: 43px;
+  height: 43px;
+  margin: 28px 24px 54px;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--warm);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+}
+
+.nav {
+  display: grid;
+  gap: 7px;
+  padding: 0 15px;
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  min-height: 43px;
+  padding: 0 10px;
+  border-left: 2px solid transparent;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.link:hover {
+  color: var(--text);
+  background: #121619;
+}
+
+.active {
+  border-left-color: var(--accent-strong);
+  background: #15191b;
+  color: var(--text-strong);
+}
+
+.index {
+  color: #686e72;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+}
+
+.railNote {
+  margin: auto 25px 28px;
+  color: #5f6468;
+  font-size: 0.7rem;
+  line-height: 1.6;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.main {
+  min-height: 100vh;
+  margin-left: 176px;
+}
+
+.mobileNav {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .rail {
+    display: none;
+  }
+
+  .main {
+    margin-left: 0;
+    padding-bottom: 72px;
+  }
+
+  .mobileNav {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 20;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    min-height: 62px;
+    border-top: 1px solid var(--border-soft);
+    background: rgba(12, 14, 16, 0.98);
+  }
+
+  .mobileLink {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    border-top: 2px solid transparent;
+    color: var(--muted);
+    font-size: 0.78rem;
+    text-decoration: none;
+  }
+
+  .mobileLink span {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+  }
+
+  .mobileActive {
+    border-top-color: var(--accent-strong);
+    color: var(--text-strong);
+  }
+}

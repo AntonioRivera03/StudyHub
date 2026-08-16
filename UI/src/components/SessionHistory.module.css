@@ -1,0 +1,136 @@
+.toolbar {
+  display: flex;
+  min-height: 34px;
+  align-items: start;
+  justify-content: space-between;
+  gap: 18px;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.toolbar p {
+  margin-bottom: 0;
+}
+
+.removedToggle {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+
+.removedToggle input {
+  width: 14px;
+  min-height: 14px;
+  accent-color: var(--accent);
+}
+
+.tableWrap {
+  overflow-x: auto;
+  border-top: 1px solid var(--border-soft);
+}
+
+.table {
+  width: 100%;
+  min-width: 790px;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+}
+
+.table th {
+  padding: 10px 12px;
+  color: #6f7579;
+  font-size: 0.67rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.table td {
+  padding: 13px 12px;
+  border-top: 1px solid #24282b;
+  color: var(--muted);
+  vertical-align: top;
+}
+
+.table th:first-child,
+.table td:first-child {
+  padding-left: 0;
+}
+
+.table th:last-child,
+.table td:last-child {
+  padding-right: 0;
+  text-align: right;
+}
+
+.sessionTitle {
+  display: block;
+  color: var(--text);
+  font-size: 0.84rem;
+}
+
+.notes {
+  display: block;
+  max-width: 250px;
+  margin-top: 4px;
+  overflow: hidden;
+  color: #6e7376;
+  font-size: 0.72rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.category {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.mono {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+}
+
+.rowAction,
+.retry {
+  padding: 6px 9px;
+  border-color: transparent;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.removed {
+  opacity: 0.62;
+}
+
+.error {
+  margin: 6px 0 12px;
+  color: #d58a86;
+  font-size: 0.78rem;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 600px) {
+  .toolbar {
+    align-items: center;
+  }
+}
