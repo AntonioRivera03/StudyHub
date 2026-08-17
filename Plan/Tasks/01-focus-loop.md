@@ -55,6 +55,12 @@ Deliver the local focus workflow: optional organization by category, Pomodoro se
 - UI component/unit tests cover the current contract; the live Playwright flow completes an Unsorted focus session through pause/resume and confirms it on the dashboard.
 - Completion verification included 17 backend tests, 12 frontend component/unit tests, and one live Playwright flow. Passing the evolving suite, not preserving these counts, is the ongoing gate.
 
+## Tweaks
+
+- Flash the timer when a session completes. For StudyFlow completion, change the timer card background to the same green as the completion dot.
+- Fix the `Save settings` hover state in Timer Settings so the text changes to white and remains visible.
+- Add an alert sound when a timer finishes. Select and verify the sound before implementing this tweak.
+
 ## Out Of Scope
 
 - Pagination, server-side category/session filtering beyond `include_deleted`, automatic Pomodoro cycle advancement, notifications, and operating-system integration.

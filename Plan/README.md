@@ -15,7 +15,7 @@ Phase 0 (Foundation) and Phase 1 (Focus loop) are complete. Later phases are pla
 | [UI_DESIGN.md](UI_DESIGN.md) | Solitude visual system, information architecture, and accessibility rules |
 | [TEST_STRATEGY.md](TEST_STRATEGY.md) | Test layers, fixtures, gates, and required commands |
 | [DECISIONS.md](DECISIONS.md) | Accepted product and engineering decisions |
-| [Tasks/](Tasks/) | Completed delivery records for Phases 0/1 and bounded handoff packets for planned phases |
+| [Tasks/](Tasks/) | Phase 01 completion record, completed Phase 00 records, and bounded handoff packets for planned phases |
 
 ## Source Of Truth
 
