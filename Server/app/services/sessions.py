@@ -65,14 +65,14 @@ class StudySessionService:
             if study_session is None:
                 raise NotFoundError("Study session not found")
             if (
-                study_session.source is SessionSource.POMODORO
+                study_session.source is not SessionSource.MANUAL
                 and {
                     "started_at",
                     "ended_at",
                 }
                 & changes.keys()
             ):
-                raise ConflictError("Pomodoro session times are managed by its timer")
+                raise ConflictError("Timer session times are managed by StudyHub")
             if "category_id" in changes:
                 category_id = changes["category_id"]
                 if category_id is not None and not isinstance(category_id, str):

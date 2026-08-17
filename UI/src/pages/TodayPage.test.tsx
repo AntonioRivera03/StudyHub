@@ -62,4 +62,25 @@ describe('TodayPage', () => {
     expect(screen.queryByText('40m')).not.toBeInTheDocument();
     expect(screen.queryByText('Make one interval count.')).not.toBeInTheDocument();
   });
+
+  it('labels StudyFlow sessions as their own source type', async () => {
+    const studyFlowSession = {
+      ...sessionFixture,
+      id: 'study-flow-1',
+      title: 'Exam review flow',
+      source: 'study_flow' as const,
+    };
+    mocks.getDashboardSummary.mockResolvedValue({
+      today_completed_focus_minutes: 75,
+      today_completed_session_count: 1,
+      active_timer: null,
+      recent_sessions: [studyFlowSession],
+    });
+    mocks.getSessions.mockResolvedValue([studyFlowSession]);
+
+    renderWithProviders(<TodayPage />);
+
+    expect(await screen.findByText('Exam review flow')).toBeInTheDocument();
+    expect(screen.getByText('StudyFlow')).toBeInTheDocument();
+  });
 });

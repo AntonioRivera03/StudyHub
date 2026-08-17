@@ -3,7 +3,7 @@ from collections.abc import Callable
 from datetime import datetime
 from typing import Protocol, Self
 
-from app.domain.entities import Category, PomodoroSettings, StudySession, Timer
+from app.domain.entities import Category, PomodoroSettings, SessionSource, StudySession, Timer
 
 
 class CategoryRepository(Protocol):
@@ -29,6 +29,8 @@ class TimerRepository(Protocol):
 
     def get_active(self) -> Timer | None: ...
 
+    def list_by_study_flow_session_id(self, session_id: str) -> list[Timer]: ...
+
     def add(self, timer: Timer) -> None: ...
 
     def save(self, timer: Timer) -> None: ...
@@ -46,6 +48,8 @@ class StudySessionRepository(Protocol):
     def get(self, session_id: str, *, include_deleted: bool = False) -> StudySession | None: ...
 
     def get_by_timer_id(self, timer_id: str) -> StudySession | None: ...
+
+    def get_active_by_source(self, source: SessionSource) -> StudySession | None: ...
 
     def add(self, study_session: StudySession) -> None: ...
 

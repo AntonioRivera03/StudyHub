@@ -72,6 +72,9 @@ Ranges are `focus_minutes` 1-180, `short_break_minutes` 1-60, `long_break_minute
   "state": "running",
   "category_id": "27f33332-2df3-48e6-bef0-0cf0bb4d28ae",
   "title": "Calculus review",
+  "study_flow_session_id": null,
+  "study_flow_segment_index": null,
+  "study_flow_confirmed_at": null,
   "duration_seconds": 1500,
   "remaining_seconds": 1500,
   "started_at": "2026-08-16T14:30:00Z",
@@ -87,6 +90,7 @@ Ranges are `focus_minutes` 1-180, `short_break_minutes` 1-60, `long_break_minute
 - `phase` is `focus`, `short_break`, or `long_break`.
 - `state` is `running`, `paused`, `completed`, or `cancelled`.
 - `category_id` and `title` are nullable and are accepted only for focus starts.
+- StudyFlow timers include their shared session ID and zero-based segment index. `study_flow_confirmed_at` records the explicit confirmation required after natural expiry.
 - `duration_seconds` is the planned duration copied from settings. `remaining_seconds` is persisted at lifecycle transitions; clients use `expected_end_at` for a running display countdown.
 
 ### StudySession
@@ -109,7 +113,7 @@ Ranges are `focus_minutes` 1-180, `short_break_minutes` 1-60, `long_break_minute
 }
 ```
 
-- `source` is `manual` or `pomodoro`; `status` is `active`, `completed`, or `cancelled`.
+- `source` is `manual`, `pomodoro`, or `study_flow`; `status` is `active`, `completed`, or `cancelled`.
 - `category_id`, `ended_at`, `notes`, and `timer_id` are nullable.
 - `source`, `status`, `timer_id`, and `duration_seconds` are server-managed.
 
@@ -179,17 +183,32 @@ Returns a `Timer` directly when one is running or paused, or JSON `null` when no
 {
   "phase": "focus",
   "category_id": "27f33332-2df3-48e6-bef0-0cf0bb4d28ae",
-  "title": "Calculus review"
+  "title": "Calculus review",
+  "study_flow_session_id": null,
+  "study_flow_segment_index": 0
 }
 ```
 
 - `phase` is required.
 - `category_id` and `title` are optional for focus and invalid for breaks.
 - `title` has 1-200 characters when supplied. Category must identify an active category.
+- Supplying `study_flow_segment_index` starts a StudyFlow segment. Segment zero creates the shared `study_flow` session; later segments require its returned `study_flow_session_id`. The server enforces the fixed six-segment phase order.
 - Duration comes from current Pomodoro settings.
 - If focus title is omitted, the Timer retains `title: null` and the linked session uses `Focus session`.
 
-Returns `201` with `Timer`. Focus start also creates one active `pomodoro` study session linked by `StudySession.timer_id`. Break start creates no session. Starting while a non-expired timer is active returns `409`.
+Returns `201` with `Timer`. A standalone focus start creates one active `pomodoro` study session linked by `StudySession.timer_id`. A StudyFlow start links every focus and break timer to one `study_flow` session. Standalone break starts create no session. Starting while a non-expired timer is active returns `409`.
+
+#### `GET /api/v1/timer/study-flow/active`
+
+Returns the active StudyFlow session ID, title/category, session status, current segment index, confirmation state, and active timer, or JSON `null`. Naturally expired segments remain current with `awaiting_confirmation: true` until confirmed.
+
+#### `GET /api/v1/timer/study-flow/{session_id}`
+
+Returns persisted StudyFlow state for recovery, including completed and cancelled pipelines. Returns `404` when the ID is not a StudyFlow session.
+
+#### `POST /api/v1/timer/study-flow/{session_id}/segments/{segment_index}/confirm`
+
+Confirms a naturally completed StudyFlow segment and unlocks the next segment. Returns the updated StudyFlow state. A segment that is not awaiting confirmation returns `409`.
 
 #### `POST /api/v1/timer/{timer_id}/pause`
 
@@ -201,11 +220,11 @@ Resumes a paused timer and recalculates `expected_end_at`. Returns `200` with `T
 
 #### `POST /api/v1/timer/{timer_id}/complete`
 
-Completes a running or paused timer and closes a linked focus session as `completed`. Repeating completion on an already completed timer is idempotent and returns that timer with `200`. Completing a cancelled timer returns `409`.
+Completes a running or paused timer and closes a linked standalone focus session as `completed`. StudyFlow focus time accumulates on the shared session; completing the final long break closes that session at the timer completion instant. Repeating completion on an already completed timer is idempotent and returns that timer with `200`. Completing a cancelled timer returns `409`.
 
 #### `POST /api/v1/timer/{timer_id}/cancel`
 
-Cancels a running or paused timer and closes a linked focus session as `cancelled`. The cancelled session remains as an audit record and is not soft-deleted. Repeating cancellation on an already cancelled timer is idempotent and returns that timer with `200`. Cancelling a completed timer returns `409`.
+Cancels a running or paused timer and closes its standalone focus or StudyFlow session as `cancelled`. An already expired running timer is completed instead of cancelled. The cancelled session remains as an audit record and is not soft-deleted. Repeating cancellation on an already cancelled timer is idempotent and returns that timer with `200`. Cancelling a completed timer returns `409`.
 
 Timer action endpoints take no request body.
 
@@ -272,7 +291,7 @@ Response:
 ```
 
 - The local day is calculated from the server clock and supplied offset.
-- `today_completed_focus_minutes` sums persisted `duration_seconds` for completed Pomodoro sessions whose `ended_at` falls in that local day, then exposes whole minutes.
+- `today_completed_focus_minutes` sums persisted `duration_seconds` for completed Pomodoro and StudyFlow sessions whose `ended_at` falls in that local day, then exposes whole minutes.
 - `today_completed_session_count` counts all completed manual and Pomodoro sessions in that local day.
 - Cancelled, active, and soft-deleted sessions do not contribute to completed totals.
 - `active_timer` is the reconciled `Timer` or null.

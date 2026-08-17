@@ -42,11 +42,23 @@ class TimerRecord(Base):
         CheckConstraint("state IN ('running', 'paused', 'completed', 'cancelled')"),
         CheckConstraint("duration_seconds > 0"),
         CheckConstraint("remaining_seconds >= 0"),
+        CheckConstraint(
+            "study_flow_segment_index IS NULL OR study_flow_segment_index BETWEEN 0 AND 5"
+        ),
+        CheckConstraint("study_flow_confirmed_at IS NULL OR study_flow_session_id IS NOT NULL"),
         Index(
             "uq_timers_one_active",
             text("1"),
             unique=True,
             sqlite_where=text("state IN ('running', 'paused')"),
+        ),
+        Index("ix_timers_study_flow_session_id", "study_flow_session_id"),
+        Index(
+            "uq_timers_study_flow_segment_success",
+            "study_flow_session_id",
+            "study_flow_segment_index",
+            unique=True,
+            sqlite_where=text("study_flow_session_id IS NOT NULL AND state != 'cancelled'"),
         ),
     )
 
@@ -57,6 +69,11 @@ class TimerRecord(Base):
         ForeignKey("categories.id", ondelete="SET NULL")
     )
     title: Mapped[str | None] = mapped_column(String(200))
+    study_flow_session_id: Mapped[str | None] = mapped_column(
+        ForeignKey("study_sessions.id", ondelete="SET NULL")
+    )
+    study_flow_segment_index: Mapped[int | None] = mapped_column(Integer)
+    study_flow_confirmed_at: Mapped[datetime | None] = mapped_column(UTCDateTime())
     duration_seconds: Mapped[int] = mapped_column(Integer, nullable=False)
     remaining_seconds: Mapped[int] = mapped_column(Integer, nullable=False)
     started_at: Mapped[datetime] = mapped_column(UTCDateTime(), nullable=False)
@@ -71,10 +88,16 @@ class TimerRecord(Base):
 class StudySessionRecord(Base):
     __tablename__ = "study_sessions"
     __table_args__ = (
-        CheckConstraint("source IN ('manual', 'pomodoro')"),
+        CheckConstraint("source IN ('manual', 'pomodoro', 'study_flow')"),
         CheckConstraint("status IN ('active', 'completed', 'cancelled')"),
         CheckConstraint("ended_at IS NULL OR ended_at > started_at"),
         CheckConstraint("duration_seconds >= 0"),
+        Index(
+            "uq_study_sessions_one_active_study_flow",
+            text("1"),
+            unique=True,
+            sqlite_where=text("source = 'study_flow' AND status = 'active' AND deleted_at IS NULL"),
+        ),
     )
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True)

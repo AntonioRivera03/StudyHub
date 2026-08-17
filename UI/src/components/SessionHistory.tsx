@@ -84,9 +84,10 @@ export function SessionHistory() {
             <tbody>
               {sessions.map((session) => {
                 const category = categories.find((item) => item.id === session.category_id);
-                const durationSeconds = session.status === 'active'
+                const durationSeconds = session.status === 'active' && session.source !== 'study_flow'
                   ? getSessionDurationSeconds(session.started_at, session.ended_at)
                   : session.duration_seconds;
+                const sourceLabel = session.source === 'study_flow' ? 'StudyFlow' : session.source;
                 return (
                   <tr key={session.id} className={session.deleted_at ? styles.removed : undefined}>
                     <td>
@@ -103,7 +104,7 @@ export function SessionHistory() {
                     </td>
                     <td className={styles.mono}>{formatSessionTime(session.started_at, session.ended_at)}</td>
                     <td className={styles.mono}>{formatDuration(durationSeconds)}</td>
-                    <td>{session.source}</td>
+                    <td>{sourceLabel}</td>
                     <td>{session.deleted_at ? 'removed' : session.status}</td>
                     <td>
                       <button

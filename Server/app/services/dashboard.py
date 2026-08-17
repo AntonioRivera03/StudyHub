@@ -29,7 +29,7 @@ class DashboardService:
             focus_seconds = sum(
                 study_session.duration_seconds
                 for study_session in completed_sessions
-                if study_session.source is SessionSource.POMODORO
+                if study_session.source in {SessionSource.POMODORO, SessionSource.STUDY_FLOW}
             )
             return DashboardSummary(
                 today_completed_focus_minutes=focus_seconds // 60,

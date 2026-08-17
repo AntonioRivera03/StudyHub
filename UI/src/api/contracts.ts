@@ -18,6 +18,7 @@ export type UpdatePomodoroSettingsRequest = Schemas['PomodoroSettingsUpdate'];
 
 export type ActiveTimer = Schemas['TimerResponse'];
 export type StartTimerRequest = Schemas['TimerStart'];
+export type ActiveStudyFlow = Schemas['StudyFlowStateResponse'];
 
 export type Session = Schemas['StudySessionResponse'];
 export type CreateSessionRequest = Schemas['StudySessionCreate'];
