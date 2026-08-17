@@ -1,7 +1,15 @@
 from datetime import datetime
 from types import TracebackType
 
-from app.domain.entities import Category, PomodoroSettings, StudySession, Timer, TimerState
+from app.domain.entities import (
+    Category,
+    PomodoroSettings,
+    SessionSource,
+    SessionStatus,
+    StudySession,
+    Timer,
+    TimerState,
+)
 
 
 class FakeCategoryRepository:
@@ -55,6 +63,9 @@ class FakeTimerRepository:
             None,
         )
 
+    def list_by_study_flow_session_id(self, session_id: str) -> list[Timer]:
+        return [timer for timer in self.items.values() if timer.study_flow_session_id == session_id]
+
     def add(self, timer: Timer) -> None:
         self.items[timer.id] = timer
 
@@ -87,6 +98,18 @@ class FakeStudySessionRepository:
 
     def get_by_timer_id(self, timer_id: str) -> StudySession | None:
         return next((item for item in self.items.values() if item.timer_id == timer_id), None)
+
+    def get_active_by_source(self, source: SessionSource) -> StudySession | None:
+        return next(
+            (
+                item
+                for item in self.items.values()
+                if item.source is source
+                and item.status is SessionStatus.ACTIVE
+                and item.deleted_at is None
+            ),
+            None,
+        )
 
     def add(self, study_session: StudySession) -> None:
         self.items[study_session.id] = study_session

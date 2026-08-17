@@ -19,6 +19,7 @@ class TimerState(StrEnum):
 class SessionSource(StrEnum):
     MANUAL = "manual"
     POMODORO = "pomodoro"
+    STUDY_FLOW = "study_flow"
 
 
 class SessionStatus(StrEnum):
@@ -60,6 +61,9 @@ class Timer:
     updated_at: datetime
     category_id: str | None = None
     title: str | None = None
+    study_flow_session_id: str | None = None
+    study_flow_segment_index: int | None = None
+    study_flow_confirmed_at: datetime | None = None
     paused_at: datetime | None = None
     completed_at: datetime | None = None
     cancelled_at: datetime | None = None

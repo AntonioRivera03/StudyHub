@@ -52,6 +52,9 @@ def _timer_entity(record: TimerRecord) -> Timer:
         state=TimerState(record.state),
         category_id=record.category_id,
         title=record.title,
+        study_flow_session_id=record.study_flow_session_id,
+        study_flow_segment_index=record.study_flow_segment_index,
+        study_flow_confirmed_at=record.study_flow_confirmed_at,
         duration_seconds=record.duration_seconds,
         remaining_seconds=record.remaining_seconds,
         started_at=record.started_at,
@@ -147,6 +150,14 @@ class SQLAlchemyTimerRepository:
         record = self._session.scalar(statement)
         return _timer_entity(record) if record else None
 
+    def list_by_study_flow_session_id(self, session_id: str) -> builtins.list[Timer]:
+        statement = (
+            select(TimerRecord)
+            .where(TimerRecord.study_flow_session_id == session_id)
+            .order_by(TimerRecord.created_at)
+        )
+        return [_timer_entity(record) for record in self._session.scalars(statement)]
+
     def add(self, timer: Timer) -> None:
         self._session.add(TimerRecord(**asdict(timer)))
 
@@ -160,6 +171,7 @@ class SQLAlchemyTimerRepository:
         record.paused_at = timer.paused_at
         record.completed_at = timer.completed_at
         record.cancelled_at = timer.cancelled_at
+        record.study_flow_confirmed_at = timer.study_flow_confirmed_at
         record.updated_at = timer.updated_at
 
 
@@ -200,6 +212,15 @@ class SQLAlchemyStudySessionRepository:
 
     def get_by_timer_id(self, timer_id: str) -> StudySession | None:
         statement = select(StudySessionRecord).where(StudySessionRecord.timer_id == timer_id)
+        record = self._session.scalar(statement)
+        return _session_entity(record) if record else None
+
+    def get_active_by_source(self, source: SessionSource) -> StudySession | None:
+        statement = select(StudySessionRecord).where(
+            StudySessionRecord.source == source.value,
+            StudySessionRecord.status == SessionStatus.ACTIVE.value,
+            StudySessionRecord.deleted_at.is_(None),
+        )
         record = self._session.scalar(statement)
         return _session_entity(record) if record else None
 

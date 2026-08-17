@@ -48,6 +48,9 @@ Settings are copied when a timer starts. Changes do not alter an existing timer.
 | `state` | `running`, `paused`, `completed`, or `cancelled` |
 | `category_id` | Nullable category foreign key; accepted only for focus |
 | `title` | Nullable string; accepted only for focus |
+| `study_flow_session_id` | Nullable StudySession foreign key shared by all timers in one StudyFlow |
+| `study_flow_segment_index` | Nullable zero-based index from 0 through 5 |
+| `study_flow_confirmed_at` | Nullable explicit confirmation instant after completion |
 | `duration_seconds` | Planned duration copied from settings |
 | `remaining_seconds` | Persisted whole-second snapshot at lifecycle transitions |
 | `started_at` | Start instant |
@@ -59,7 +62,7 @@ Settings are copied when a timer starts. Changes do not alter an existing timer.
 
 `running` and `paused` are active states. There can be at most one active timer across all phases; the application checks this and SQLite supplies a conditional unique index.
 
-A focus timer creates one linked study session. The session owns the relationship through unique nullable `StudySession.timer_id`. Break timers create no study session.
+A standalone focus timer creates one linked study session through unique nullable `StudySession.timer_id`. Standalone break timers create no study session. All six StudyFlow timers link to one `study_flow` session through `Timer.study_flow_session_id` and their ordered segment index.
 
 ### StudySession
 
@@ -72,7 +75,7 @@ A focus timer creates one linked study session. The session owns the relationshi
 | `ended_at` | Nullable UTC activity end |
 | `duration_seconds` | Actual activity duration |
 | `notes` | Nullable text, at most 10,000 characters |
-| `source` | `manual` or `pomodoro`; server-managed |
+| `source` | `manual`, `pomodoro`, or `study_flow`; server-managed |
 | `status` | `active`, `completed`, or `cancelled`; server-managed |
 | `timer_id` | Unique nullable timer foreign key; set for Pomodoro sessions |
 | `created_at`, `updated_at`, `deleted_at` | Common timestamps and soft delete |
@@ -80,6 +83,8 @@ A focus timer creates one linked study session. The session owns the relationshi
 Manual sessions may be created without `ended_at`; they start as `active` with zero duration and become `completed` when a later PATCH supplies a valid end. Their duration is derived from `ended_at - started_at`. Clearing `ended_at` through PATCH makes a manual session active again.
 
 A focus start creates an active `pomodoro` session. Timer completion or natural expiry closes it as `completed`; timer cancellation closes it as `cancelled`. Pomodoro duration is actual active timer time, excluding pauses and unused planned time. Cancelled focus sessions remain persisted as audit records, are not automatically soft-deleted, and are excluded from completed totals.
+
+A StudyFlow session starts at the first focus segment's start instant. Completed focus segments add active focus seconds to its duration; breaks, pauses, and gaps do not. Intermediate segment completions leave it active. The final long-break completion closes it using that timer's completion instant. Natural segment expiry requires explicit confirmation before the next segment can start. Cancelling a StudyFlow segment cancels the aggregate session.
 
 Pomodoro timestamps are timer-managed. Session metadata may be updated separately. Any active session, manual or Pomodoro, cannot be deleted.
 
@@ -112,6 +117,7 @@ A naturally expired running timer is reconciled before active-timer reads and be
 manual create without end -> active -> completed when ended_at is set
 manual create with end ----------------> completed
 focus start -> active -> completed | cancelled
+StudyFlow first segment -> active -> completed at final segment | cancelled
 completed/cancelled -> deleted <-> restored
 ```
 
@@ -196,6 +202,7 @@ new_ease = max(1.3, ease + 0.1 - (5 - q) * (0.08 + (5 - q) * 0.02))
 Category 1 <- 0..* StudySession
 Category 1 <- 0..* Timer (focus only)
 Timer 1 <- 0..1 StudySession through StudySession.timer_id
+StudySession 1 <- 0..6 StudyFlow timers through Timer.study_flow_session_id
 
 Category 1 <- 0..* FlashcardDeck -> 0..* Flashcard
 Category 1 <- 0..* Note
@@ -212,7 +219,7 @@ Category snapshot fields on planned review sessions and quiz attempts preserve h
 ### Current Dashboard
 
 - Completed session membership in the local day is based on `ended_at` in the half-open UTC interval calculated from the client's JavaScript-style timezone offset.
-- `today_completed_focus_minutes` sums persisted `duration_seconds` from non-deleted, completed `pomodoro` sessions and exposes whole minutes.
+- `today_completed_focus_minutes` sums persisted `duration_seconds` from non-deleted, completed `pomodoro` and `study_flow` sessions and exposes whole minutes.
 - `today_completed_session_count` counts non-deleted, completed manual and Pomodoro sessions.
 - Active and cancelled sessions are excluded. Timers are never counted separately from their linked Pomodoro session.
 

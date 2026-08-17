@@ -1,8 +1,26 @@
 import { apiRequest } from './client';
-import type { ActiveTimer, StartTimerRequest } from './contracts';
+import type { ActiveStudyFlow, ActiveTimer, StartTimerRequest } from './contracts';
 
 export function getActiveTimer(): Promise<ActiveTimer | null> {
   return apiRequest<ActiveTimer | null>('/timer/active');
+}
+
+export function getActiveStudyFlow(): Promise<ActiveStudyFlow | null> {
+  return apiRequest<ActiveStudyFlow | null>('/timer/study-flow/active');
+}
+
+export function getStudyFlow(sessionId: string): Promise<ActiveStudyFlow> {
+  return apiRequest<ActiveStudyFlow>(`/timer/study-flow/${sessionId}`);
+}
+
+export function confirmStudyFlowSegment(
+  sessionId: string,
+  segmentIndex: number,
+): Promise<ActiveStudyFlow> {
+  return apiRequest<ActiveStudyFlow>(
+    `/timer/study-flow/${sessionId}/segments/${segmentIndex}/confirm`,
+    { method: 'POST' },
+  );
 }
 
 export function startTimer(payload: StartTimerRequest): Promise<ActiveTimer> {

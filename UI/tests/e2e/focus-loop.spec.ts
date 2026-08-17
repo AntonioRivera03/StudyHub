@@ -6,11 +6,13 @@ test('completes and records an uncategorized focus session', async ({ page }) =>
   await page.goto('/focus');
 
   const existingCancel = page.getByRole('button', { name: 'Cancel' });
+  const startFocus = page.getByRole('button', { name: 'Start focus' });
+  await expect(existingCancel.or(startFocus)).toBeVisible();
   if (await existingCancel.isVisible()) {
     await existingCancel.click();
   }
 
-  await expect(page.getByRole('button', { name: 'Start focus' })).toBeVisible();
+  await expect(startFocus).toBeVisible();
   await page.getByLabel(/Focus title/).fill(sessionTitle);
   await page.getByRole('button', { name: 'Start focus' }).click();
 

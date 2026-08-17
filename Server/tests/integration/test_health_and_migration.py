@@ -17,7 +17,7 @@ def test_health(api_context: ApiContext) -> None:
     assert response.json() == {"status": "ok"}
     with sqlite3.connect(api_context.database_path) as connection:
         revision = connection.execute("SELECT version_num FROM alembic_version").fetchone()
-    assert revision == ("20260816_0001",)
+    assert revision == ("20260816_0002",)
 
 
 def test_initial_alembic_migration(tmp_path: Path) -> None:
@@ -40,6 +40,7 @@ def test_initial_alembic_migration(tmp_path: Path) -> None:
         session_columns = {
             row[1] for row in connection.execute("PRAGMA table_info(study_sessions)")
         }
+        timer_columns = {row[1] for row in connection.execute("PRAGMA table_info(timers)")}
         revision = connection.execute("SELECT version_num FROM alembic_version").fetchone()
     assert {
         "alembic_version",
@@ -49,7 +50,12 @@ def test_initial_alembic_migration(tmp_path: Path) -> None:
         "timers",
     } <= tables
     assert "duration_seconds" in session_columns
-    assert revision == ("20260816_0001",)
+    assert {
+        "study_flow_session_id",
+        "study_flow_segment_index",
+        "study_flow_confirmed_at",
+    } <= timer_columns
+    assert revision == ("20260816_0002",)
 
 
 def test_startup_migration_is_idempotent(tmp_path: Path) -> None:
@@ -61,7 +67,65 @@ def test_startup_migration_is_idempotent(tmp_path: Path) -> None:
 
     with sqlite3.connect(tmp_path / "restart.db") as connection:
         revision = connection.execute("SELECT version_num FROM alembic_version").fetchone()
-    assert revision == ("20260816_0001",)
+    assert revision == ("20260816_0002",)
+
+
+def test_study_flow_migration_preserves_existing_timer_session_link(tmp_path: Path) -> None:
+    database_path = tmp_path / "existing.db"
+    environment = os.environ.copy()
+    environment["STUDYHUB_DATABASE_URL"] = f"sqlite:///{database_path}"
+    server_root = Path(__file__).parents[2]
+    subprocess.run(
+        [sys.executable, "-m", "alembic", "upgrade", "20260816_0001"],
+        cwd=server_root,
+        env=environment,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    with sqlite3.connect(database_path) as connection:
+        timestamp = "2026-08-16 10:00:00"
+        connection.execute(
+            """
+            INSERT INTO timers (
+                id, phase, state, duration_seconds, remaining_seconds, started_at,
+                expected_end_at, created_at, updated_at
+            ) VALUES (?, 'focus', 'completed', 1500, 0, ?, ?, ?, ?)
+            """,
+            ("timer-1", timestamp, timestamp, timestamp, timestamp),
+        )
+        connection.execute(
+            """
+            INSERT INTO study_sessions (
+                id, title, started_at, ended_at, duration_seconds, source, status,
+                timer_id, created_at, updated_at
+            ) VALUES (?, 'Existing focus', ?, ?, 1500, 'pomodoro', 'completed', ?, ?, ?)
+            """,
+            ("session-1", timestamp, "2026-08-16 10:25:00", "timer-1", timestamp, timestamp),
+        )
+        connection.commit()
+
+    subprocess.run(
+        [sys.executable, "-m", "alembic", "upgrade", "head"],
+        cwd=server_root,
+        env=environment,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    with sqlite3.connect(database_path) as connection:
+        linked_timer_id = connection.execute(
+            "SELECT timer_id FROM study_sessions WHERE id = 'session-1'"
+        ).fetchone()
+        flow_link = connection.execute(
+            """
+            SELECT study_flow_session_id, study_flow_segment_index, study_flow_confirmed_at
+            FROM timers WHERE id = 'timer-1'
+            """
+        ).fetchone()
+    assert linked_timer_id == ("timer-1",)
+    assert flow_link == (None, None, None)
 
 
 def test_production_frontend_serving_and_browser_fallback(tmp_path: Path) -> None:
