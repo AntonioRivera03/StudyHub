@@ -10,7 +10,11 @@ from app.core.errors import ConflictError
 from app.core.settings import Settings
 from app.database.repositories import (
     SQLAlchemyCategoryRepository,
+    SQLAlchemyFlashcardDeckRepository,
+    SQLAlchemyFlashcardRepository,
     SQLAlchemyPomodoroSettingsRepository,
+    SQLAlchemyReviewEventRepository,
+    SQLAlchemyReviewSessionRepository,
     SQLAlchemyStudySessionRepository,
     SQLAlchemyTimerRepository,
 )
@@ -26,6 +30,10 @@ class SQLAlchemyUnitOfWork:
         self.pomodoro_settings = SQLAlchemyPomodoroSettingsRepository(self._session)
         self.timers = SQLAlchemyTimerRepository(self._session)
         self.sessions = SQLAlchemyStudySessionRepository(self._session)
+        self.decks = SQLAlchemyFlashcardDeckRepository(self._session)
+        self.cards = SQLAlchemyFlashcardRepository(self._session)
+        self.review_sessions = SQLAlchemyReviewSessionRepository(self._session)
+        self.review_events = SQLAlchemyReviewEventRepository(self._session)
         return self
 
     def __exit__(

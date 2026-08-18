@@ -11,6 +11,9 @@ from app.services.timers import TimerService
 class DashboardSummary:
     today_completed_focus_minutes: int
     today_completed_session_count: int
+    today_completed_review_minutes: int
+    today_completed_review_session_count: int
+    today_reviewed_card_count: int
     active_timer: Timer | None
     recent_sessions: list[StudySession]
 
@@ -31,9 +34,21 @@ class DashboardService:
                 for study_session in completed_sessions
                 if study_session.source in {SessionSource.POMODORO, SessionSource.STUDY_FLOW}
             )
+            completed_reviews = unit_of_work.review_sessions.list_completed_between(start, end)
+            review_seconds = sum(
+                review_session.duration_seconds for review_session in completed_reviews
+            )
             return DashboardSummary(
                 today_completed_focus_minutes=focus_seconds // 60,
-                today_completed_session_count=len(completed_sessions),
+                today_completed_session_count=sum(
+                    study_session.source in {SessionSource.MANUAL, SessionSource.POMODORO}
+                    for study_session in completed_sessions
+                ),
+                today_completed_review_minutes=review_seconds // 60,
+                today_completed_review_session_count=len(completed_reviews),
+                today_reviewed_card_count=unit_of_work.review_events.count_for_sessions(
+                    {review_session.id for review_session in completed_reviews}
+                ),
                 active_timer=active_timer,
                 recent_sessions=unit_of_work.sessions.list_recent(limit=5),
             )

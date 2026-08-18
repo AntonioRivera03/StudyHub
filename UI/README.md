@@ -1,6 +1,6 @@
 # StudyHub UI
 
-React and TypeScript frontend for the StudyHub focus loop.
+React and TypeScript frontend for the StudyHub focus and flashcard workflows.
 
 ## Commands
 
@@ -16,7 +16,7 @@ npm run build
 
 The Vite development server proxies `/api` to `http://127.0.0.1:8000`. API calls use the `/api/v1` prefix.
 
-The Playwright check starts the real backend and Vite server, uses the system Chromium installation, and stores its temporary SQLite database under `/tmp/opencode`.
+The Playwright check starts the real backend and Vite server, uses the system Chromium installation, and stores its temporary SQLite database under `/tmp/opencode`. It covers the focus loop plus desktop and 320px flashcard authoring/review flows.
 
 ## API Types
 

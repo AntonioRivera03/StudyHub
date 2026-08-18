@@ -4,6 +4,7 @@ import styles from './AppShell.module.css';
 const links = [
   { to: '/', label: 'Today', shortLabel: '01', end: true },
   { to: '/focus', label: 'Focus', shortLabel: '02', end: false },
+  { to: '/flashcards', label: 'Flashcards', shortLabel: '03', end: false },
 ];
 
 export function AppShell() {

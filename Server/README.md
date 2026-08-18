@@ -20,6 +20,10 @@ reserved.
 Study session responses include `duration_seconds`. Manual durations are derived from their
 timestamps; Pomodoro durations contain elapsed active timer time and exclude pauses.
 
+Flashcard decks and cards support soft deletion and restore. Review sessions apply deterministic
+SM-2 scheduling through idempotent rating commands and contribute to separate dashboard review
+totals without creating study sessions.
+
 `GET /api/v1/dashboard/summary` uses UTC day boundaries by default. Pass
 `timezone_offset_minutes` using the same sign convention as JavaScript's
 `Date.getTimezoneOffset()` to calculate the caller's local day.

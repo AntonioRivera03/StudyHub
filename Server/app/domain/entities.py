@@ -28,6 +28,19 @@ class SessionStatus(StrEnum):
     CANCELLED = "cancelled"
 
 
+class ReviewStatus(StrEnum):
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+    ABANDONED = "abandoned"
+
+
+class ReviewRating(StrEnum):
+    AGAIN = "again"
+    HARD = "hard"
+    GOOD = "good"
+    EASY = "easy"
+
+
 @dataclass(slots=True)
 class Category:
     id: str
@@ -84,3 +97,66 @@ class StudySession:
     created_at: datetime
     updated_at: datetime
     deleted_at: datetime | None = None
+
+
+@dataclass(slots=True)
+class FlashcardDeck:
+    id: str
+    name: str
+    description: str | None
+    category_id: str | None
+    active_card_count: int
+    due_card_count: int
+    created_at: datetime
+    updated_at: datetime
+    deleted_at: datetime | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class ScheduleSnapshot:
+    repetitions: int
+    interval_days: int
+    ease_factor: float
+    due_at: datetime
+    last_reviewed_at: datetime | None
+
+
+@dataclass(slots=True)
+class Flashcard:
+    id: str
+    deck_id: str
+    front_markdown: str
+    back_markdown: str
+    position: int
+    schedule: ScheduleSnapshot
+    created_at: datetime
+    updated_at: datetime
+    deleted_at: datetime | None = None
+
+
+@dataclass(slots=True)
+class ReviewSession:
+    id: str
+    deck_id: str
+    category_id_snapshot: str | None
+    status: ReviewStatus
+    started_at: datetime
+    ended_at: datetime | None
+    duration_seconds: int
+    created_at: datetime
+    updated_at: datetime
+    deleted_at: datetime | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class ReviewEvent:
+    id: str
+    command_id: str
+    review_session_id: str
+    card_id: str
+    sequence: int
+    rating: ReviewRating
+    quality: int
+    reviewed_at: datetime
+    previous_schedule: ScheduleSnapshot
+    new_schedule: ScheduleSnapshot

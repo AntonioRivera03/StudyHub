@@ -29,3 +29,17 @@ export interface SessionListParams {
 }
 
 export type DashboardSummary = Schemas['DashboardSummaryResponse'];
+
+export type ReviewRating = Schemas['ReviewRating'];
+export type FlashcardDeck = Schemas['FlashcardDeckResponse'];
+export type Flashcard = Schemas['FlashcardResponse'];
+export type ReviewSession = Schemas['ReviewSessionResponse'];
+export type ReviewProgress = Schemas['ReviewProgressResponse'];
+export type ReviewEvent = Schemas['ReviewEventResponse'];
+export type ReviewRatingResult = Schemas['ReviewRatingResultResponse'];
+export type CreateDeckRequest = Schemas['FlashcardDeckCreate'];
+export type UpdateDeckRequest = Schemas['FlashcardDeckUpdate'];
+export type CreateCardRequest = Schemas['FlashcardCreate'];
+export type UpdateCardRequest = Schemas['FlashcardUpdate'];
+export type StartReviewRequest = Schemas['ReviewStart'];
+export type RateCardRequest = Schemas['ReviewRatingCreate'];

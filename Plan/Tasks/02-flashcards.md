@@ -3,7 +3,7 @@
 ## Handoff
 
 - **Phase:** 2
-- **Status:** Planned
+- **Status:** Complete
 - **Coordinator:** 5.6 Sol, owning API amendment, review UX, scheduling contract review, and integration
 - **Backend lane:** Delegable after endpoint details are accepted in `API.md`
 - **Dependencies:** Task 01 complete; current dashboard contract documented as the extension baseline
@@ -12,7 +12,7 @@
 
 Add deck/card authoring and a deterministic SM-2 review loop whose activity contributes once to dashboard totals.
 
-## Scope
+## Delivered Scope
 
 ### Architecture And Contract Lane
 
@@ -21,7 +21,7 @@ Add deck/card authoring and a deterministic SM-2 review loop whose activity cont
 - Preserve the repository/application boundary; put SM-2 in a pure domain policy using the injected clock.
 - Define OpenAPI schemas for schedule state and review progress without exposing ORM rows.
 
-### Delegated Backend Lane
+### Backend Lane
 
 - Add `FlashcardDeck`, `Flashcard`, `ReviewSession`, and `ReviewEvent` migrations and repositories exactly as modeled.
 - Implement deck/card CRUD, ordering, soft delete/restore, category assignment at deck level, and due-card queries.
@@ -45,18 +45,19 @@ Add deck/card authoring and a deterministic SM-2 review loop whose activity cont
 - API conventions and reserved endpoint groups: `API.md`.
 - A review event updates one card schedule and the owning session in one transaction.
 - Due selection uses `due_at <= now`, excludes deleted cards/decks, and has deterministic ordering.
+- While a review session for a deck is in progress, cards in that deck cannot be created, updated, deleted, or restored; those mutations return `409` until the review is completed or abandoned, keeping the review queue and card identity stable.
 - Review-session `category_id_snapshot` is copied at start and does not move if the deck changes later.
 - Only a completed, non-deleted review session contributes duration; review events supply `cards_reviewed`.
 - No review operation creates, links, or updates a study session.
 
-## Acceptance Criteria
+## Completion Criteria Met
 
 - Accepted endpoint detail exists in `API.md` before backend and frontend implementations diverge.
 - Scheduler unit tests cover every rating, first/second/later successful intervals, failed-review reset, ease changes, 1.3 floor, and due instant.
 - A card cannot persist a category independent of its deck.
 - Retried rating requests cannot duplicate events, repetitions, or dashboard card counts.
 - Review interruption and resume preserve position/history; complete and abandon are distinct terminal outcomes.
-- Soft-deleted decks/cards are excluded from due queues and can be restored under documented conflict rules.
+- Soft-deleted decks/cards are excluded from due queues and can be restored under documented conflict rules, including `409` card mutations during an in-progress review of the owning deck.
 - A completed review session adds its duration and event count exactly once while `today_completed_session_count` remains a count of completed manual/Pomodoro study sessions.
 - Deck authoring and review pass RTL/MSW and desktop/mobile Playwright flows, including keyboard rating and error recovery.
 
@@ -71,4 +72,7 @@ Run the full commands in `TEST_STRATEGY.md`, plus focused scheduler, repository 
 
 ## Handoff Output
 
-The backend delegate returns migration revision, accepted endpoint implementation, SM-2 test matrix, idempotency approach, OpenAPI result, and commands run. The coordinator verifies scheduling labels, inherited category behavior, and aggregate totals against the real backend.
+- Migration revision `20260817_0003` adds decks, cards, review sessions, review events, constraints, and deterministic indexes.
+- Rating idempotency uses a globally unique client command UUID plus per-session sequence/card uniqueness; retries return the immutable original event.
+- OpenAPI types are regenerated and consumed directly through UI aliases.
+- Verification passes 36 backend tests, 32 frontend component/unit tests, production build, and three live Playwright flows including desktop/mobile flashcards.

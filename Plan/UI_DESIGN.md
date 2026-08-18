@@ -63,7 +63,7 @@ Do not rely on extra status colors. Pair status with text and an icon or shape. 
 
 ## Information Architecture
 
-### Phase 1 Navigation
+### Current Navigation
 
 | Destination | Purpose |
 | --- | --- |
@@ -72,12 +72,13 @@ Do not rely on extra status colors. Pair status with text and an icon or shape. 
 | Sessions | Study history, filters, manual entry, edit, delete, and restore |
 | Categories | Category management and restore |
 | Settings | Pomodoro durations and cycle interval |
+| Flashcards | Deck/card authoring, due queues, resumable reviews, and restore |
 
 Dashboard and Focus are primary destinations. Sessions, Categories, and Settings may move into the mobile secondary menu if all labels do not fit.
 
 ### Planned Navigation
 
-Add Flashcards, Notes, Planner, and Quizzes only when their phase is functional. Do not show dead links, fabricated counts, or controls that resolve to placeholder pages.
+Add Notes, Planner, and Quizzes only when their phase is functional. Do not show dead links, fabricated counts, or controls that resolve to placeholder pages.
 
 ## Phase 1 Screen Rules
 

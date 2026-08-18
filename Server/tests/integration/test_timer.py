@@ -162,7 +162,7 @@ def test_study_flow_logs_one_session_from_first_start_to_final_completion(
 
     summary = client.get("/api/v1/dashboard/summary").json()
     assert summary["today_completed_focus_minutes"] == 1
-    assert summary["today_completed_session_count"] == 1
+    assert summary["today_completed_session_count"] == 0
 
 
 def test_cancelling_study_flow_segment_cancels_session_and_allows_new_flow(

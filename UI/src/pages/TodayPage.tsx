@@ -40,7 +40,12 @@ export function TodayPage() {
     return <div className={styles.page}><StatusBlock title="Preparing today..." /></div>;
   }
   const activeTimer = summary.active_timer;
-  const isEmpty = summary.today_completed_session_count === 0 && summary.recent_sessions.length === 0;
+  const reviewMinutes = summary.today_completed_review_minutes;
+  const reviewSessions = summary.today_completed_review_session_count;
+  const reviewedCards = summary.today_reviewed_card_count;
+  const isEmpty = summary.today_completed_session_count === 0
+    && reviewSessions === 0
+    && summary.recent_sessions.length === 0;
 
   return (
     <div className={styles.page}>
@@ -58,6 +63,18 @@ export function TodayPage() {
         <div>
           <span>Sessions</span>
           <strong>{summary.today_completed_session_count}</strong>
+        </div>
+        <div>
+          <span>Review time</span>
+          <strong>{formatDuration(reviewMinutes * 60)}</strong>
+        </div>
+        <div>
+          <span>Reviews</span>
+          <strong>{reviewSessions}</strong>
+        </div>
+        <div>
+          <span>Cards reviewed</span>
+          <strong>{reviewedCards}</strong>
         </div>
         <p className={styles.metricNote}>Today / local time</p>
       </section>
