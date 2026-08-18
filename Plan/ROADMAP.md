@@ -1,6 +1,6 @@
 # Roadmap
 
-Phases are sequential unless a task packet explicitly identifies safe parallel work. Phase 0 and Phase 1 are complete; all other phases are planned.
+Phases are sequential unless a task packet explicitly identifies safe parallel work. Phase 0 through Phase 2 are complete; all other phases are planned.
 
 ## Phase 0: Foundation
 
@@ -48,18 +48,22 @@ Phases are sequential unless a task packet explicitly identifies safe parallel w
 
 ## Phase 2: Flashcards
 
-**Scope**
+**Status: Complete**
+
+**Delivered scope**
 
 - Deck and card authoring, category assignment at deck level, due-card selection, review sessions, and review events.
 - SM-2 scheduling using the locked rating mapping and minimum ease factor.
 - Dashboard aggregation from review sessions without creating study-session duplicates.
 
-**Exit criteria**
+**Completion evidence**
 
 - Cards inherit category from their deck and cannot store a separate category.
 - Deterministic scheduler tests cover Again, Hard, Good, Easy, interval progression, and ease floor.
 - Interrupted and completed review sessions preserve consistent review history and duration.
 - Deck/card CRUD, review flow, soft delete/restore, and dashboard totals pass backend and frontend tests.
+- Generated OpenAPI backs the UI aliases; Markdown rendering rejects raw HTML and unsafe links.
+- Completion verification includes 36 backend tests, 32 frontend component/unit tests, and three live Playwright flows covering desktop/mobile flashcards and the existing focus loop.
 
 ## Phase 3: Notes
 

@@ -3,7 +3,17 @@ from collections.abc import Callable
 from datetime import datetime
 from typing import Protocol, Self
 
-from app.domain.entities import Category, PomodoroSettings, SessionSource, StudySession, Timer
+from app.domain.entities import (
+    Category,
+    Flashcard,
+    FlashcardDeck,
+    PomodoroSettings,
+    ReviewEvent,
+    ReviewSession,
+    SessionSource,
+    StudySession,
+    Timer,
+)
 
 
 class CategoryRepository(Protocol):
@@ -56,11 +66,81 @@ class StudySessionRepository(Protocol):
     def save(self, study_session: StudySession) -> None: ...
 
 
+class FlashcardDeckRepository(Protocol):
+    def list(
+        self, now: datetime, *, include_deleted: bool = False
+    ) -> builtins.list[FlashcardDeck]: ...
+
+    def get(
+        self, deck_id: str, now: datetime, *, include_deleted: bool = False
+    ) -> FlashcardDeck | None: ...
+
+    def add(self, deck: FlashcardDeck) -> None: ...
+
+    def save(self, deck: FlashcardDeck) -> None: ...
+
+
+class FlashcardRepository(Protocol):
+    def list_by_deck(
+        self, deck_id: str, *, include_deleted: bool = False
+    ) -> builtins.list[Flashcard]: ...
+
+    def list_due(self, deck_id: str, now: datetime) -> builtins.list[Flashcard]: ...
+
+    def list_due_excluding_review(
+        self, deck_id: str, review_session_id: str, now: datetime
+    ) -> builtins.list[Flashcard]: ...
+
+    def get(self, card_id: str, *, include_deleted: bool = False) -> Flashcard | None: ...
+
+    def max_position(self, deck_id: str) -> int | None: ...
+
+    def add(self, card: Flashcard) -> None: ...
+
+    def save(self, card: Flashcard) -> None: ...
+
+
+class ReviewSessionRepository(Protocol):
+    def list(self, *, include_deleted: bool = False) -> builtins.list[ReviewSession]: ...
+
+    def list_completed_between(
+        self, start: datetime, end: datetime
+    ) -> builtins.list[ReviewSession]: ...
+
+    def get(
+        self, review_session_id: str, *, include_deleted: bool = False
+    ) -> ReviewSession | None: ...
+
+    def get_active(self) -> ReviewSession | None: ...
+
+    def get_active_for_deck(self, deck_id: str) -> ReviewSession | None: ...
+
+    def add(self, review_session: ReviewSession) -> None: ...
+
+    def save(self, review_session: ReviewSession) -> None: ...
+
+
+class ReviewEventRepository(Protocol):
+    def list_by_session(self, review_session_id: str) -> builtins.list[ReviewEvent]: ...
+
+    def get_by_command_id(self, command_id: str) -> ReviewEvent | None: ...
+
+    def next_sequence(self, review_session_id: str) -> int: ...
+
+    def count_for_sessions(self, review_session_ids: set[str]) -> int: ...
+
+    def add(self, event: ReviewEvent) -> None: ...
+
+
 class UnitOfWork(Protocol):
     categories: CategoryRepository
     pomodoro_settings: PomodoroSettingsRepository
     timers: TimerRepository
     sessions: StudySessionRepository
+    decks: FlashcardDeckRepository
+    cards: FlashcardRepository
+    review_sessions: ReviewSessionRepository
+    review_events: ReviewEventRepository
 
     def __enter__(self) -> Self: ...
 

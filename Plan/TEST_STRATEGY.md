@@ -8,9 +8,11 @@
 - Every defect fix adds the narrowest useful regression test at the owning layer.
 - A phase passes when the current quality commands and all prior-phase tests pass; historical test counts are evidence, not frozen targets.
 
-## Completed Phase 0/1 Verification
+## Completed Phase 0/1/2 Verification
 
 At Phase 1 completion, the suite contained 17 backend tests, 12 frontend component/unit tests, and one live Playwright flow. These counts may grow as coverage improves.
+
+At Phase 2 completion, the suite contains 36 backend tests, 32 frontend component/unit tests, and three live Playwright flows.
 
 ### Backend
 
@@ -35,7 +37,7 @@ Run domain/application behavior without FastAPI or a real database.
 
 - Timer transitions, active elapsed calculation, exact expiry boundaries, and invalid transitions.
 - Dashboard local-day boundaries using JavaScript-style timezone offsets.
-- SM-2 scheduling when Phase 2 begins.
+- SM-2 scheduling across all ratings, interval progression, reset behavior, and the ease floor.
 - Planner agenda grouping and quiz grading in their planned phases.
 
 Use a fake clock that can be set and advanced explicitly. Include exact boundary instants such as `now == expected_end_at`.
@@ -77,7 +79,7 @@ Use a new temporary file-backed SQLite database per test or isolated test group.
 ### Playwright
 
 - Run against the real localhost FastAPI server, Vite proxy, and an isolated temporary SQLite file.
-- Keep the completed Phase 1 focus loop as the baseline live flow.
+- Keep the completed Phase 1 focus loop and Phase 2 desktop/mobile flashcard flows as baseline live flows.
 - Add at least one real authoring/study critical path for each later phase.
 - Add mobile, keyboard, and accessibility scenarios as those gates are implemented; do not claim unimplemented coverage.
 

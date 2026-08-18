@@ -17,7 +17,7 @@ def test_health(api_context: ApiContext) -> None:
     assert response.json() == {"status": "ok"}
     with sqlite3.connect(api_context.database_path) as connection:
         revision = connection.execute("SELECT version_num FROM alembic_version").fetchone()
-    assert revision == ("20260816_0002",)
+    assert revision == ("20260817_0003",)
 
 
 def test_initial_alembic_migration(tmp_path: Path) -> None:
@@ -41,6 +41,13 @@ def test_initial_alembic_migration(tmp_path: Path) -> None:
             row[1] for row in connection.execute("PRAGMA table_info(study_sessions)")
         }
         timer_columns = {row[1] for row in connection.execute("PRAGMA table_info(timers)")}
+        indexes = {
+            row[0]
+            for row in connection.execute("SELECT name FROM sqlite_master WHERE type = 'index'")
+        }
+        review_events_sql = connection.execute(
+            "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'review_events'"
+        ).fetchone()[0]
         revision = connection.execute("SELECT version_num FROM alembic_version").fetchone()
     assert {
         "alembic_version",
@@ -48,6 +55,10 @@ def test_initial_alembic_migration(tmp_path: Path) -> None:
         "pomodoro_settings",
         "study_sessions",
         "timers",
+        "flashcard_decks",
+        "flashcards",
+        "review_sessions",
+        "review_events",
     } <= tables
     assert "duration_seconds" in session_columns
     assert {
@@ -55,7 +66,11 @@ def test_initial_alembic_migration(tmp_path: Path) -> None:
         "study_flow_segment_index",
         "study_flow_confirmed_at",
     } <= timer_columns
-    assert revision == ("20260816_0002",)
+    assert "uq_review_sessions_one_in_progress" in indexes
+    assert "uq_review_events_command_id" in review_events_sql
+    assert "uq_review_events_session_sequence" in review_events_sql
+    assert "uq_review_events_session_card" in review_events_sql
+    assert revision == ("20260817_0003",)
 
 
 def test_startup_migration_is_idempotent(tmp_path: Path) -> None:
@@ -67,7 +82,7 @@ def test_startup_migration_is_idempotent(tmp_path: Path) -> None:
 
     with sqlite3.connect(tmp_path / "restart.db") as connection:
         revision = connection.execute("SELECT version_num FROM alembic_version").fetchone()
-    assert revision == ("20260816_0002",)
+    assert revision == ("20260817_0003",)
 
 
 def test_study_flow_migration_preserves_existing_timer_session_link(tmp_path: Path) -> None:

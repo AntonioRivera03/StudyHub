@@ -34,7 +34,7 @@
 
 .metrics {
   display: grid;
-  grid-template-columns: 1fr 1fr auto;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   align-items: end;
   margin-bottom: 30px;
   padding: 22px 0;
@@ -68,7 +68,9 @@
 }
 
 .metricNote {
+  grid-column: 1 / -1;
   margin: 0;
+  padding-top: 14px;
   color: #666b6f;
   font-size: 0.7rem;
 }
@@ -190,6 +192,18 @@
   font-size: 0.74rem;
 }
 
+@media (max-width: 900px) {
+  .metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    row-gap: 20px;
+  }
+
+  .metrics > div:nth-child(4) {
+    padding-left: 0;
+    border-left: 0;
+  }
+}
+
 @media (max-width: 720px) {
   .page {
     padding: 38px 20px 50px;
@@ -201,6 +215,16 @@
 
   .metrics {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .metrics > div:nth-child(odd) {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .metrics > div:nth-child(even) {
+    padding-left: 20px;
+    border-left: 1px solid var(--border-soft);
   }
 
   .metricNote {
@@ -223,6 +247,19 @@
 
   .firstSession {
     margin: 48px 0 66px;
+  }
+}
+
+@media (max-width: 370px) {
+  .metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .metrics > div:nth-child(n) {
+    min-height: 54px;
+    padding: 10px 0;
+    border-top: 1px solid var(--border-soft);
+    border-left: 0;
   }
 }
 

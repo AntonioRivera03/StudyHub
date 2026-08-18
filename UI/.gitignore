@@ -1,5 +1,4 @@
 node_modules/
 dist/
 coverage/
-src/api/generated.ts
 *.tsbuildinfo

@@ -2,7 +2,7 @@
 
 ## Status
 
-Phase 0 (Foundation) and Phase 1 (Focus loop) are complete. Later phases are planned and must not be treated as implemented.
+Phase 0 (Foundation), Phase 1 (Focus loop), and Phase 2 (Flashcards) are complete. Later phases are planned and must not be treated as implemented.
 
 ## Document Index
 
@@ -10,12 +10,12 @@ Phase 0 (Foundation) and Phase 1 (Focus loop) are complete. Later phases are pla
 | --- | --- |
 | [ROADMAP.md](ROADMAP.md) | Delivery order, phase scope, and exit criteria |
 | [SAD.md](SAD.md) | System structure, boundaries, and dependency direction |
-| [DATA_MODEL.md](DATA_MODEL.md) | Implemented Phase 1 entities plus planned entities, relationships, lifecycle, and aggregation rules |
+| [DATA_MODEL.md](DATA_MODEL.md) | Implemented Phase 1/2 entities plus planned entities, relationships, lifecycle, and aggregation rules |
 | [API.md](API.md) | HTTP conventions and endpoint contracts |
 | [UI_DESIGN.md](UI_DESIGN.md) | Solitude visual system, information architecture, and accessibility rules |
 | [TEST_STRATEGY.md](TEST_STRATEGY.md) | Test layers, fixtures, gates, and required commands |
 | [DECISIONS.md](DECISIONS.md) | Accepted product and engineering decisions |
-| [Tasks/](Tasks/) | Phase 01 completion record, completed Phase 00 records, and bounded handoff packets for planned phases |
+| [Tasks/](Tasks/) | Phase 01/02 completion records, completed Phase 00 records, and bounded handoff packets for planned phases |
 
 ## Source Of Truth
 

@@ -32,6 +32,9 @@ describe('TodayPage', () => {
     mocks.getDashboardSummary.mockResolvedValue({
       today_completed_focus_minutes: 0,
       today_completed_session_count: 0,
+      today_completed_review_minutes: 0,
+      today_completed_review_session_count: 0,
+      today_reviewed_card_count: 0,
       active_timer: null,
       recent_sessions: [],
     });
@@ -48,6 +51,9 @@ describe('TodayPage', () => {
     mocks.getDashboardSummary.mockResolvedValue({
       today_completed_focus_minutes: 65,
       today_completed_session_count: 2,
+      today_completed_review_minutes: 12,
+      today_completed_review_session_count: 1,
+      today_reviewed_card_count: 7,
       active_timer: null,
       recent_sessions: [sessionFixture],
     });
@@ -56,6 +62,8 @@ describe('TodayPage', () => {
     renderWithProviders(<TodayPage />);
 
     expect(await screen.findByText('1h 5m')).toBeInTheDocument();
+    expect(screen.getByText('12m')).toBeInTheDocument();
+    expect(screen.getByText('Cards reviewed').nextElementSibling).toHaveTextContent('7');
     expect(await screen.findByText('Read notes')).toBeInTheDocument();
     expect(screen.getByText('Coursework')).toBeInTheDocument();
     expect(screen.getByText('25m')).toBeInTheDocument();
@@ -73,6 +81,9 @@ describe('TodayPage', () => {
     mocks.getDashboardSummary.mockResolvedValue({
       today_completed_focus_minutes: 75,
       today_completed_session_count: 1,
+      today_completed_review_minutes: 0,
+      today_completed_review_session_count: 0,
+      today_reviewed_card_count: 0,
       active_timer: null,
       recent_sessions: [studyFlowSession],
     });

@@ -1,8 +1,8 @@
 # StudyHub
 
-StudyHub is a local-first study workspace. The current release contains the Foundation and Focus Loop milestones: a persistent Pomodoro timer, audited study sessions, categories, timer settings, and a daily summary.
+StudyHub is a local-first study workspace. The current release contains the Foundation, Focus Loop, and Flashcards milestones: a persistent Pomodoro timer, audited study sessions, categories, timer settings, deck/card authoring, SM-2 reviews, and a daily summary.
 
-The remaining flashcard, notes, planner, quiz, and MCP-readiness work is defined in [`Plan/ROADMAP.md`](Plan/ROADMAP.md).
+The remaining notes, planner, quiz, and MCP-readiness work is defined in [`Plan/ROADMAP.md`](Plan/ROADMAP.md).
 
 ## Requirements
 
@@ -45,7 +45,7 @@ The default SQLite database is stored at `$XDG_DATA_HOME/studyhub/studyhub.db`, 
 make check
 ```
 
-This runs backend linting, formatting checks, strict typing and tests, followed by frontend linting, typing, component tests, production build, and the live Playwright focus workflow.
+This runs backend linting, formatting checks, strict typing and tests, followed by frontend linting, typing, component tests, production build, and the live Playwright focus and flashcard workflows.
 
 ## Documentation
 

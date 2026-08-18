@@ -1,12 +1,12 @@
 # Data Model
 
-This document separates the implemented Phase 0/1 model from planned entities. Phase labels identify delivery timing, not separate databases.
+This document separates the implemented Phase 0/1/2 model from planned entities. Phase labels identify delivery timing, not separate databases.
 
 ## Common Rules
 
 - Public identifiers are server-generated UUID strings. Foreign keys use the same identifier form.
 - Mutable records have `created_at` and `updated_at` UTC instants. The API serializes timestamps as UTC RFC3339 values.
-- Implemented soft deletion applies to categories and study sessions through nullable `deleted_at`. Normal reads exclude deleted rows; restore clears `deleted_at`.
+- Implemented soft deletion applies to categories, study sessions, flashcard decks, flashcards, and review sessions through nullable `deleted_at`. Normal reads exclude deleted rows; restore clears `deleted_at`.
 - Soft-deleting a category does not delete related content. A deleted category cannot be selected for a new assignment until restored.
 - Planned user-content entities follow the same soft-delete rule unless their phase contract states otherwise.
 - Durations are non-negative whole seconds.
@@ -123,9 +123,9 @@ completed/cancelled -> deleted <-> restored
 
 Active sessions cannot be deleted. Only completed sessions contribute to current dashboard counts; cancelled sessions remain visible history but do not count.
 
-## Planned Entities
+## Implemented Phase 2 Entities
 
-### Flashcards: Phase 2
+### Flashcards
 
 **FlashcardDeck**
 
@@ -154,6 +154,8 @@ SM-2 mapping is Again=1, Hard=3, Good=4, Easy=5. For quality below 3, repetition
 ```text
 new_ease = max(1.3, ease + 0.1 - (5 - q) * (0.08 + (5 - q) * 0.02))
 ```
+
+## Planned Entities
 
 ### Notes: Phase 3
 
@@ -223,9 +225,9 @@ Category snapshot fields on planned review sessions and quiz attempts preserve h
 - `today_completed_session_count` counts non-deleted, completed manual and Pomodoro sessions.
 - Active and cancelled sessions are excluded. Timers are never counted separately from their linked Pomodoro session.
 
-### Planned Review And Quiz Totals
+### Review And Planned Quiz Totals
 
-Future totals use three disjoint activity sources:
+Activity totals use three disjoint activity sources; quiz attempts remain planned:
 
 | Source | Included rows | Duration | Count |
 | --- | --- | --- | --- |
